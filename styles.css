@@ -1,0 +1,769 @@
+:root {
+  --bg: #f4ede3;
+  --surface: rgba(255, 251, 246, 0.74);
+  --surface-strong: rgba(255, 250, 244, 0.92);
+  --panel: rgba(27, 25, 23, 0.88);
+  --panel-soft: rgba(44, 39, 35, 0.78);
+  --line: rgba(39, 31, 24, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.1);
+  --text: #1d1713;
+  --muted: #6e6156;
+  --inverse: #f8f2ea;
+  --accent: #b55233;
+  --accent-deep: #8a3820;
+  --danger: #cb4c33;
+  --success: #2f8167;
+  --shadow: 0 24px 64px rgba(63, 39, 24, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family:
+    "SF Pro Text",
+    "PingFang SC",
+    "Hiragino Sans GB",
+    "Microsoft YaHei",
+    sans-serif;
+  color: var(--text);
+  background:
+    linear-gradient(180deg, #f9f5ee 0%, var(--bg) 38%, #eee4d5 100%);
+  overflow-x: hidden;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.ambient {
+  position: fixed;
+  inset: auto;
+  width: 48vw;
+  height: 48vw;
+  border-radius: 999px;
+  pointer-events: none;
+  filter: blur(60px);
+  opacity: 0.55;
+  z-index: 0;
+}
+
+.ambient--one {
+  top: -10vw;
+  left: -12vw;
+  background: radial-gradient(circle, rgba(181, 82, 51, 0.24), transparent 68%);
+}
+
+.ambient--two {
+  right: -16vw;
+  bottom: -16vw;
+  background: radial-gradient(circle, rgba(96, 74, 47, 0.16), transparent 68%);
+}
+
+.app-shell {
+  position: relative;
+  z-index: 1;
+  width: min(1320px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 28px 0 56px;
+}
+
+.masthead {
+  min-height: min(44svh, 420px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.82fr);
+  align-items: end;
+  gap: 28px;
+  padding: clamp(28px, 4vw, 48px);
+  border-radius: 36px;
+  background:
+    linear-gradient(135deg, rgba(255, 247, 238, 0.64), rgba(255, 250, 244, 0.28)),
+    radial-gradient(circle at 78% 22%, rgba(181, 82, 51, 0.18), transparent 26%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.42), rgba(234, 224, 209, 0.16));
+  border: 1px solid rgba(44, 32, 22, 0.08);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.masthead::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, transparent 0 58%, rgba(255, 255, 255, 0.36) 70%, transparent 84%);
+  transform: translateX(18%);
+  pointer-events: none;
+}
+
+.brand-mark,
+.section-label {
+  margin: 0 0 12px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.masthead h1,
+.compose-panel h2,
+.overview h2,
+.ledger-detail h2 {
+  margin: 0;
+  font-family:
+    "Avenir Next",
+    "SF Pro Display",
+    "Segoe UI",
+    sans-serif;
+  letter-spacing: -0.05em;
+}
+
+.masthead h1 {
+  max-width: 7ch;
+  font-size: clamp(3.6rem, 8vw, 6.8rem);
+  line-height: 0.92;
+}
+
+.masthead__summary {
+  max-width: 32ch;
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 1.02rem;
+  line-height: 1.75;
+}
+
+.masthead__meta {
+  display: grid;
+  gap: 14px;
+  align-self: stretch;
+}
+
+.meta-chip,
+.meta-note {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  padding: 20px 22px;
+  border-left: 1px solid rgba(35, 27, 21, 0.1);
+}
+
+.meta-chip span,
+.meta-note span {
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.meta-chip strong,
+.meta-note strong {
+  font-size: 1.06rem;
+  line-height: 1.5;
+}
+
+.action-strip {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 4px 22px 0;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 28px;
+  margin-top: 28px;
+  align-items: start;
+}
+
+.compose-panel {
+  position: sticky;
+  top: 20px;
+  padding: 30px 26px;
+  border-radius: 30px;
+  color: var(--inverse);
+  background:
+    linear-gradient(180deg, rgba(31, 28, 25, 0.96), rgba(20, 18, 17, 0.94));
+  box-shadow: 0 20px 50px rgba(26, 20, 15, 0.3);
+}
+
+.compose-panel h2 {
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  line-height: 0.98;
+}
+
+.section-copy,
+.compose-footnote,
+.overview__hint,
+.ledger-detail__head p {
+  margin: 12px 0 0;
+  color: rgba(248, 242, 234, 0.68);
+  line-height: 1.65;
+}
+
+.card-form {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.card-form label,
+.inline-field {
+  display: grid;
+  gap: 8px;
+}
+
+.card-form span,
+.inline-field span,
+.stat-card span,
+.stat-card label,
+.metric-block span {
+  font-size: 0.86rem;
+  color: inherit;
+}
+
+.compose-panel .card-form span,
+.compose-panel .compose-footnote {
+  color: rgba(248, 242, 234, 0.76);
+}
+
+.compose-footnote--subtle {
+  color: rgba(248, 242, 234, 0.48);
+}
+
+input,
+select {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 14px 16px;
+  color: inherit;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+input::placeholder {
+  color: rgba(248, 242, 234, 0.34);
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: rgba(255, 183, 147, 0.58);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 4px rgba(181, 82, 51, 0.16);
+  transform: translateY(-1px);
+}
+
+.primary-btn,
+.ghost-btn {
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    color 180ms ease,
+    opacity 180ms ease;
+}
+
+.primary-btn {
+  margin-top: 6px;
+  padding: 14px 18px;
+  font-weight: 700;
+  color: #fff9f4;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+}
+
+.primary-btn:hover,
+.ghost-btn:hover,
+.credit-card:hover {
+  transform: translateY(-2px);
+}
+
+.ghost-btn {
+  padding: 10px 14px;
+  color: var(--accent-deep);
+  background: rgba(181, 82, 51, 0.1);
+}
+
+.ghost-btn--light {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.main-panel {
+  display: grid;
+  gap: 22px;
+}
+
+.overview,
+.ledger-detail {
+  padding: 28px 30px;
+  border-radius: 30px;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 248, 0.78), rgba(255, 248, 240, 0.66));
+  border: 1px solid rgba(38, 31, 24, 0.08);
+  box-shadow: var(--shadow);
+}
+
+.overview__head,
+.ledger-detail__head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.overview h2,
+.ledger-detail h2 {
+  font-size: clamp(1.8rem, 4vw, 2.55rem);
+  line-height: 1;
+}
+
+.overview__hint,
+.ledger-detail__head p {
+  max-width: 28ch;
+  margin: 0;
+  color: var(--muted);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.95fr 1.05fr;
+  gap: 16px;
+}
+
+.stat-card {
+  min-width: 0;
+  min-height: 162px;
+  display: grid;
+  align-content: start;
+  padding: 22px 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.54);
+  border: 1px solid rgba(38, 31, 24, 0.08);
+}
+
+.stat-card strong {
+  margin-top: 16px;
+  font-family:
+    "Avenir Next",
+    "SF Pro Display",
+    "Segoe UI",
+    sans-serif;
+  font-size: clamp(2rem, 3vw, 2.7rem);
+  line-height: 1.02;
+  letter-spacing: -0.06em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-card small {
+  margin-top: auto;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.stat-card--primary {
+  background:
+    linear-gradient(180deg, rgba(29, 25, 23, 0.95), rgba(42, 37, 33, 0.92));
+  color: var(--inverse);
+}
+
+.stat-card--primary span,
+.stat-card--primary small {
+  color: rgba(248, 242, 234, 0.74);
+}
+
+.stat-card--input {
+  background:
+    linear-gradient(180deg, rgba(224, 235, 232, 0.86), rgba(245, 248, 247, 0.72));
+}
+
+.stat-card--input input {
+  margin-top: 18px;
+  border-color: rgba(44, 57, 53, 0.08);
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--text);
+}
+
+.stat-card--input input::placeholder {
+  color: rgba(29, 23, 19, 0.38);
+}
+
+.stat-card--difference {
+  background:
+    linear-gradient(180deg, rgba(255, 245, 239, 0.86), rgba(255, 252, 247, 0.74));
+}
+
+.empty-state {
+  padding: 24px 0 10px;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+}
+
+.card-list {
+  display: grid;
+  gap: 14px;
+}
+
+.credit-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(200px, 1fr) minmax(220px, 0.9fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid rgba(38, 31, 24, 0.08);
+  transition:
+    transform 180ms ease,
+    opacity 180ms ease,
+    border-color 180ms ease;
+}
+
+.credit-card:first-child {
+  border-top: 0;
+}
+
+.credit-card:hover {
+  border-color: rgba(181, 82, 51, 0.22);
+}
+
+.credit-card__identity {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.credit-card__title-group,
+.metric-block {
+  min-width: 0;
+}
+
+.credit-card__bank-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.credit-card__bank-name {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(181, 82, 51, 0.1);
+  color: var(--accent-deep);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.credit-card__tail {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.credit-card__name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.22;
+  overflow-wrap: anywhere;
+}
+
+.bank-logo-wrap {
+  width: 48px;
+  height: 36px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid rgba(38, 31, 24, 0.08);
+}
+
+.bank-logo-image,
+.bank-logo-fallback {
+  width: 100%;
+  height: 100%;
+}
+
+.bank-logo-image {
+  object-fit: contain;
+  display: block;
+  padding: 4px;
+  background: #fff;
+}
+
+.bank-logo-fallback {
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.26);
+}
+
+.inline-field--available span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.inline-field--available input {
+  border-color: rgba(38, 31, 24, 0.08);
+  background: rgba(255, 255, 255, 0.62);
+  color: var(--text);
+  padding: 11px 14px;
+}
+
+.inline-field--available input::placeholder {
+  color: rgba(29, 23, 19, 0.36);
+}
+
+.credit-card__metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.metric-block {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(38, 31, 24, 0.06);
+}
+
+.metric-block span {
+  color: var(--muted);
+}
+
+.metric-block strong {
+  font-family:
+    "Avenir Next",
+    "SF Pro Display",
+    "Segoe UI",
+    sans-serif;
+  font-size: 1.18rem;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.credit-card__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.credit-card__actions .ghost-btn {
+  padding: 8px 12px;
+  font-size: 0.84rem;
+}
+
+.bank-logo--icbc {
+  background: linear-gradient(135deg, #d3272c, #b00919);
+}
+
+.bank-logo--ccb {
+  background: linear-gradient(135deg, #2666d6, #0b3ea7);
+}
+
+.bank-logo--abc {
+  background: linear-gradient(135deg, #2f8e53, #1f6e3e);
+}
+
+.bank-logo--boc {
+  background: linear-gradient(135deg, #bb1f2d, #8f0f1f);
+}
+
+.bank-logo--cmb {
+  background: linear-gradient(135deg, #d63c44, #b61628);
+}
+
+.bank-logo--spdb {
+  background: linear-gradient(135deg, #3f57cc, #253998);
+}
+
+.bank-logo--gdb {
+  background: linear-gradient(135deg, #c83b34, #9e201b);
+}
+
+.bank-logo--citic {
+  background: linear-gradient(135deg, #d74940, #8f2d2f);
+}
+
+.bank-logo--ceb {
+  background: linear-gradient(135deg, #7f4fd6, #5c2bb4);
+}
+
+.bank-logo--cmbc {
+  background: linear-gradient(135deg, #0e9b86, #0b7565);
+}
+
+.bank-logo--pingan {
+  background: linear-gradient(135deg, #f06f2f, #d94e0f);
+}
+
+.bank-logo--bocom {
+  background: linear-gradient(135deg, #1650c8, #103b93);
+}
+
+.bank-logo--generic {
+  background: linear-gradient(135deg, #7a6e63, #554a42);
+}
+
+.bank-logo--hxb {
+  background: linear-gradient(135deg, #c13e34, #9b201c);
+}
+
+.bank-logo--nbcb {
+  background: linear-gradient(135deg, #ff8e31, #eb6300);
+}
+
+.bank-logo--czb {
+  background: linear-gradient(135deg, #b4222a, #8b1019);
+}
+
+.bank-logo--bhb {
+  background: linear-gradient(135deg, #2b79ca, #15549b);
+}
+
+.bank-logo--hfb {
+  background: linear-gradient(135deg, #148f6d, #0b6a50);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  animation: fade-up 640ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.masthead.reveal {
+  animation-duration: 760ms;
+}
+
+.compose-panel.reveal {
+  animation-delay: 80ms;
+}
+
+.overview.reveal {
+  animation-delay: 120ms;
+}
+
+.ledger-detail.reveal {
+  animation-delay: 180ms;
+}
+
+@keyframes fade-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
+
+@media (max-width: 1120px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .compose-panel {
+    position: static;
+  }
+
+  .credit-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .credit-card__actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    width: min(100% - 28px, 1320px);
+  }
+
+  .masthead {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .masthead h1 {
+    max-width: none;
+    font-size: clamp(3rem, 12vw, 4.8rem);
+  }
+
+  .action-strip {
+    padding-inline: 0;
+  }
+
+  .overview__head,
+  .ledger-detail__head,
+  .stat-grid {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell {
+    padding-top: 18px;
+  }
+
+  .masthead,
+  .compose-panel,
+  .overview,
+  .ledger-detail {
+    padding: 22px 20px;
+    border-radius: 24px;
+  }
+
+  .stat-card {
+    min-height: 0;
+  }
+
+  .stat-card strong {
+    white-space: normal;
+  }
+
+  .credit-card__metrics {
+    grid-template-columns: 1fr;
+  }
+}

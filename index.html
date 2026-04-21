@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Creditopia 信用卡额度追踪</title>
+    <link rel="stylesheet" href="./styles.css?v=5" />
+  </head>
+  <body>
+    <div class="ambient ambient--one" aria-hidden="true"></div>
+    <div class="ambient ambient--two" aria-hidden="true"></div>
+
+    <div class="app-shell">
+      <header class="masthead reveal">
+        <div class="masthead__brand">
+          <p class="brand-mark">Creditopia</p>
+          <h1>信用卡额度追踪</h1>
+          <p class="masthead__summary">
+            同步每张卡的剩余额度，直接核对总欠款与记账软件差值。
+          </p>
+        </div>
+
+        <div class="masthead__meta">
+          <div class="meta-chip">
+            <span>工作台</span>
+            <strong>额度 / 欠款 / 差额</strong>
+          </div>
+          <div class="meta-note">
+            <span>存储方式</span>
+            <strong id="storage-mode">仅保存在当前浏览器</strong>
+          </div>
+          <div class="action-strip">
+            <button type="button" class="ghost-btn ghost-btn--light" id="export-data-btn">
+              导出数据
+            </button>
+            <button type="button" class="ghost-btn ghost-btn--light" id="import-data-btn">
+              导入数据
+            </button>
+          </div>
+          <input type="file" id="import-file-input" accept="application/json" hidden />
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="compose-panel reveal">
+          <div class="section-label">录入区</div>
+          <h2>新增信用卡</h2>
+          <p class="section-copy">
+            先写基础信息，再填当前剩余额度，系统会自动更新欠款。
+          </p>
+
+          <form id="card-form" class="card-form">
+            <label>
+              <span>银行</span>
+              <select id="card-bank">
+                <option value="icbc">工商银行</option>
+                <option value="ccb">建设银行</option>
+                <option value="abc">农业银行</option>
+                <option value="boc">中国银行</option>
+                <option value="psbc">邮储银行</option>
+                <option value="bocom">交通银行</option>
+                <option value="cmb">招商银行</option>
+                <option value="cib">兴业银行</option>
+                <option value="spdb">浦发银行</option>
+                <option value="gdb">广发银行</option>
+                <option value="citic">中信银行</option>
+                <option value="ceb">光大银行</option>
+                <option value="cmbc">民生银行</option>
+                <option value="pingan">平安银行</option>
+                <option value="hxb">华夏银行</option>
+                <option value="bob">北京银行</option>
+                <option value="bos">上海银行</option>
+                <option value="njcb">南京银行</option>
+                <option value="nbcb">宁波银行</option>
+                <option value="czb">浙商银行</option>
+                <option value="bhb">渤海银行</option>
+                <option value="hfb">恒丰银行</option>
+                <option value="generic">其他银行</option>
+              </select>
+            </label>
+
+            <label>
+              <span>信用卡名称（可选）</span>
+              <input
+                type="text"
+                id="card-name"
+                placeholder="不填则默认使用银行名称"
+                maxlength="30"
+              />
+            </label>
+
+            <label>
+              <span>尾号</span>
+              <input
+                type="text"
+                id="card-last4"
+                placeholder="例如：1234"
+                inputmode="numeric"
+                maxlength="8"
+                required
+              />
+            </label>
+
+            <label>
+              <span>总额度</span>
+              <input
+                type="text"
+                id="card-limit"
+                placeholder="例如：50000"
+                inputmode="decimal"
+                required
+              />
+            </label>
+
+            <label>
+              <span>当前剩余额度</span>
+              <input
+                type="text"
+                id="card-available"
+                placeholder="例如：32888.5"
+                inputmode="decimal"
+                required
+              />
+            </label>
+
+            <button type="submit" class="primary-btn">添加信用卡</button>
+          </form>
+
+          <p class="compose-footnote">新增后会立即进入下方追踪区，可继续修改剩余额度。</p>
+          <p class="compose-footnote compose-footnote--subtle">
+            建议以后通过本地小站访问，不再直接双击 `index.html`。
+          </p>
+        </aside>
+
+        <section class="main-panel">
+          <section class="overview reveal">
+            <div class="overview__head">
+              <div>
+                <div class="section-label">总览</div>
+                <h2>对账状态</h2>
+              </div>
+              <p class="overview__hint">信用卡汇总会和你的记账软件记录保持同屏核对。</p>
+            </div>
+
+            <div class="stat-grid">
+              <article class="stat-card stat-card--primary">
+                <span>信用卡总欠款</span>
+                <strong id="cards-total-debt">¥0.00</strong>
+              </article>
+
+              <article class="stat-card stat-card--input">
+                <label for="ledger-total-debt">记账软件总欠款</label>
+                <input
+                  type="text"
+                  id="ledger-total-debt"
+                  placeholder="手动填写记账软件中的总欠款"
+                  inputmode="decimal"
+                />
+              </article>
+
+              <article class="stat-card stat-card--difference">
+                <span>差额</span>
+                <strong id="debt-difference">¥0.00</strong>
+                <small id="difference-hint">信用卡汇总 - 记账软件记录</small>
+              </article>
+            </div>
+          </section>
+
+          <section class="ledger-detail reveal">
+            <div class="section-label">逐卡追踪</div>
+            <div class="ledger-detail__head">
+              <h2>信用卡列表</h2>
+              <p>优先修改每张卡的当前剩余额度，欠款会自动回算。</p>
+            </div>
+
+            <div id="empty-state" class="empty-state">
+              还没有信用卡记录，先在左侧录入一张开始追踪吧。
+            </div>
+
+            <div id="card-list" class="card-list"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <template id="card-item-template">
+      <article class="credit-card reveal">
+        <div class="credit-card__identity">
+          <div class="bank-logo-wrap" aria-hidden="true">
+            <img class="bank-logo-image" alt="" />
+            <div class="bank-logo-fallback"></div>
+          </div>
+          <div class="credit-card__title-group">
+            <div class="credit-card__bank-row">
+              <span class="credit-card__bank-name"></span>
+              <span class="credit-card__tail"></span>
+            </div>
+            <p class="credit-card__name"></p>
+          </div>
+        </div>
+
+        <label class="inline-field inline-field--available">
+          <span>当前剩余额度</span>
+          <input
+            type="text"
+            class="available-input"
+            inputmode="decimal"
+          />
+        </label>
+
+        <div class="credit-card__metrics">
+          <div class="metric-block">
+            <span>总额度</span>
+            <strong class="limit-value"></strong>
+          </div>
+          <div class="metric-block">
+            <span>当前欠款</span>
+            <strong class="debt-value"></strong>
+          </div>
+        </div>
+
+        <div class="credit-card__actions">
+          <button type="button" class="ghost-btn delete-btn">删除</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="./script.js?v=5"></script>
+  </body>
+</html>
