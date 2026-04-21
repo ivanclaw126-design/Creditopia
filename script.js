@@ -194,6 +194,12 @@ function renderCards() {
     const deleteButton = fragment.querySelector('.delete-btn');
 
     if (bankConfig.logoPath) {
+      bankLogoImageElement.onerror = () => {
+        bankLogoImageElement.hidden = true;
+        bankLogoFallbackElement.hidden = false;
+        bankLogoFallbackElement.textContent = bankConfig.short;
+        bankLogoFallbackElement.className = `bank-logo-fallback bank-logo--${card.bank}`;
+      };
       bankLogoImageElement.src = bankConfig.logoPath;
       bankLogoImageElement.hidden = false;
       bankLogoFallbackElement.hidden = true;

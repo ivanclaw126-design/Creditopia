@@ -1,19 +1,21 @@
 :root {
-  --bg: #f4ede3;
-  --surface: rgba(255, 251, 246, 0.74);
-  --surface-strong: rgba(255, 250, 244, 0.92);
-  --panel: rgba(27, 25, 23, 0.88);
-  --panel-soft: rgba(44, 39, 35, 0.78);
-  --line: rgba(39, 31, 24, 0.1);
-  --line-strong: rgba(255, 255, 255, 0.1);
+  --bg: #f5ede2;
+  --surface: rgba(255, 251, 246, 0.78);
+  --surface-strong: rgba(255, 252, 248, 0.94);
+  --surface-muted: rgba(247, 239, 229, 0.74);
+  --panel: rgba(28, 25, 23, 0.94);
+  --panel-soft: rgba(48, 41, 35, 0.82);
+  --line: rgba(39, 31, 24, 0.09);
+  --line-strong: rgba(255, 255, 255, 0.12);
   --text: #1d1713;
-  --muted: #6e6156;
+  --muted: #6a5d52;
   --inverse: #f8f2ea;
   --accent: #b55233;
   --accent-deep: #8a3820;
   --danger: #cb4c33;
   --success: #2f8167;
   --shadow: 0 24px 64px rgba(63, 39, 24, 0.12);
+  --shadow-soft: 0 14px 36px rgba(63, 39, 24, 0.08);
 }
 
 * {
@@ -35,7 +37,8 @@ body {
     sans-serif;
   color: var(--text);
   background:
-    linear-gradient(180deg, #f9f5ee 0%, var(--bg) 38%, #eee4d5 100%);
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.72), transparent 34%),
+    linear-gradient(180deg, #faf6f0 0%, var(--bg) 40%, #eee3d4 100%);
   overflow-x: hidden;
 }
 
@@ -54,50 +57,52 @@ input::-webkit-inner-spin-button {
 .ambient {
   position: fixed;
   inset: auto;
-  width: 48vw;
-  height: 48vw;
+  width: 44vw;
+  height: 44vw;
   border-radius: 999px;
   pointer-events: none;
-  filter: blur(60px);
-  opacity: 0.55;
+  filter: blur(72px);
+  opacity: 0.42;
   z-index: 0;
 }
 
 .ambient--one {
   top: -10vw;
   left: -12vw;
-  background: radial-gradient(circle, rgba(181, 82, 51, 0.24), transparent 68%);
+  background: radial-gradient(circle, rgba(181, 82, 51, 0.18), transparent 68%);
 }
 
 .ambient--two {
   right: -16vw;
   bottom: -16vw;
-  background: radial-gradient(circle, rgba(96, 74, 47, 0.16), transparent 68%);
+  background: radial-gradient(circle, rgba(96, 74, 47, 0.12), transparent 68%);
 }
 
 .app-shell {
   position: relative;
   z-index: 1;
-  width: min(1320px, calc(100% - 48px));
+  width: min(1280px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 28px 0 56px;
+  padding: 24px 0 56px;
 }
 
 .masthead {
-  min-height: min(44svh, 420px);
+  position: relative;
+  min-height: min(36svh, 360px);
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.82fr);
-  align-items: end;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.92fr);
+  align-items: stretch;
   gap: 28px;
-  padding: clamp(28px, 4vw, 48px);
-  border-radius: 36px;
+  padding: clamp(26px, 4vw, 42px);
+  border-radius: 34px;
   background:
-    linear-gradient(135deg, rgba(255, 247, 238, 0.64), rgba(255, 250, 244, 0.28)),
-    radial-gradient(circle at 78% 22%, rgba(181, 82, 51, 0.18), transparent 26%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.42), rgba(234, 224, 209, 0.16));
+    linear-gradient(135deg, rgba(255, 249, 242, 0.84), rgba(255, 251, 246, 0.58)),
+    radial-gradient(circle at 82% 18%, rgba(181, 82, 51, 0.12), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(234, 224, 209, 0.18));
   border: 1px solid rgba(44, 32, 22, 0.08);
   box-shadow: var(--shadow);
   overflow: hidden;
+  backdrop-filter: blur(18px);
 }
 
 .masthead::after {
@@ -105,19 +110,34 @@ input::-webkit-inner-spin-button {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(120deg, transparent 0 58%, rgba(255, 255, 255, 0.36) 70%, transparent 84%);
-  transform: translateX(18%);
+    linear-gradient(120deg, transparent 0 60%, rgba(255, 255, 255, 0.28) 72%, transparent 86%);
+  transform: translateX(10%);
   pointer-events: none;
+}
+
+.masthead__brand,
+.masthead__meta,
+.main-panel,
+.compose-panel,
+.overview,
+.ledger-detail {
+  position: relative;
+  z-index: 1;
 }
 
 .brand-mark,
 .section-label {
-  margin: 0 0 12px;
-  font-size: 0.76rem;
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 14px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent);
+  background: rgba(181, 82, 51, 0.08);
 }
 
 .masthead h1,
@@ -134,22 +154,22 @@ input::-webkit-inner-spin-button {
 }
 
 .masthead h1 {
-  max-width: 7ch;
-  font-size: clamp(3.6rem, 8vw, 6.8rem);
-  line-height: 0.92;
+  max-width: 9ch;
+  font-size: clamp(3.1rem, 6vw, 5.2rem);
+  line-height: 0.95;
 }
 
 .masthead__summary {
-  max-width: 32ch;
+  max-width: 38ch;
   margin: 18px 0 0;
   color: var(--muted);
-  font-size: 1.02rem;
+  font-size: 1rem;
   line-height: 1.75;
 }
 
 .masthead__meta {
   display: grid;
-  gap: 14px;
+  gap: 12px;
   align-self: stretch;
 }
 
@@ -158,13 +178,16 @@ input::-webkit-inner-spin-button {
   display: grid;
   gap: 6px;
   align-content: start;
-  padding: 20px 22px;
-  border-left: 1px solid rgba(35, 27, 21, 0.1);
+  padding: 18px 20px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(44, 32, 22, 0.07);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .meta-chip span,
 .meta-note span {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
@@ -172,20 +195,20 @@ input::-webkit-inner-spin-button {
 
 .meta-chip strong,
 .meta-note strong {
-  font-size: 1.06rem;
-  line-height: 1.5;
+  font-size: 1rem;
+  line-height: 1.45;
 }
 
 .action-strip {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  padding: 4px 22px 0;
+  padding-top: 2px;
 }
 
 .workspace {
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
+  grid-template-columns: 340px minmax(0, 1fr);
   gap: 28px;
   margin-top: 28px;
   align-items: start;
@@ -193,18 +216,19 @@ input::-webkit-inner-spin-button {
 
 .compose-panel {
   position: sticky;
-  top: 20px;
-  padding: 30px 26px;
+  top: 22px;
+  padding: 28px 24px;
   border-radius: 30px;
   color: var(--inverse);
   background:
-    linear-gradient(180deg, rgba(31, 28, 25, 0.96), rgba(20, 18, 17, 0.94));
-  box-shadow: 0 20px 50px rgba(26, 20, 15, 0.3);
+    linear-gradient(180deg, rgba(32, 29, 26, 0.98), rgba(20, 18, 17, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 20px 50px rgba(26, 20, 15, 0.26);
 }
 
 .compose-panel h2 {
-  font-size: clamp(2rem, 4vw, 2.6rem);
-  line-height: 0.98;
+  font-size: clamp(1.9rem, 3vw, 2.35rem);
+  line-height: 1.02;
 }
 
 .section-copy,
@@ -233,13 +257,13 @@ input::-webkit-inner-spin-button {
 .stat-card span,
 .stat-card label,
 .metric-block span {
-  font-size: 0.86rem;
+  font-size: 0.84rem;
   color: inherit;
 }
 
 .compose-panel .card-form span,
 .compose-panel .compose-footnote {
-  color: rgba(248, 242, 234, 0.76);
+  color: rgba(248, 242, 234, 0.78);
 }
 
 .compose-footnote--subtle {
@@ -249,9 +273,9 @@ input::-webkit-inner-spin-button {
 input,
 select {
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08);
   padding: 14px 16px;
   color: inherit;
   transition:
@@ -266,7 +290,9 @@ input::placeholder {
 }
 
 input:focus,
-select:focus {
+select:focus,
+.primary-btn:focus-visible,
+.ghost-btn:focus-visible {
   outline: none;
   border-color: rgba(255, 183, 147, 0.58);
   background: rgba(255, 255, 255, 0.1);
@@ -283,15 +309,17 @@ select:focus {
     transform 180ms ease,
     background 180ms ease,
     color 180ms ease,
-    opacity 180ms ease;
+    opacity 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .primary-btn {
-  margin-top: 6px;
+  margin-top: 8px;
   padding: 14px 18px;
   font-weight: 700;
   color: #fff9f4;
   background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  box-shadow: 0 14px 24px rgba(181, 82, 51, 0.24);
 }
 
 .primary-btn:hover,
@@ -308,7 +336,7 @@ select:focus {
 
 .ghost-btn--light {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.48);
+  background: rgba(255, 255, 255, 0.58);
 }
 
 .main-panel {
@@ -321,9 +349,10 @@ select:focus {
   padding: 28px 30px;
   border-radius: 30px;
   background:
-    linear-gradient(180deg, rgba(255, 252, 248, 0.78), rgba(255, 248, 240, 0.66));
+    linear-gradient(180deg, rgba(255, 252, 248, 0.84), rgba(255, 248, 240, 0.72));
   border: 1px solid rgba(38, 31, 24, 0.08);
   box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
 }
 
 .overview__head,
@@ -337,43 +366,45 @@ select:focus {
 
 .overview h2,
 .ledger-detail h2 {
-  font-size: clamp(1.8rem, 4vw, 2.55rem);
-  line-height: 1;
+  font-size: clamp(1.75rem, 4vw, 2.35rem);
+  line-height: 1.02;
 }
 
 .overview__hint,
 .ledger-detail__head p {
-  max-width: 28ch;
+  max-width: 30ch;
   margin: 0;
   color: var(--muted);
 }
 
 .stat-grid {
   display: grid;
-  grid-template-columns: 1.15fr 0.95fr 1.05fr;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr) minmax(0, 1fr);
   gap: 16px;
 }
 
 .stat-card {
   min-width: 0;
-  min-height: 162px;
+  min-height: 150px;
   display: grid;
   align-content: start;
-  padding: 22px 18px;
+  gap: 8px;
+  padding: 22px 20px;
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.54);
+  background: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(38, 31, 24, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .stat-card strong {
-  margin-top: 16px;
+  margin-top: 8px;
   font-family:
     "Avenir Next",
     "SF Pro Display",
     "Segoe UI",
     sans-serif;
-  font-size: clamp(2rem, 3vw, 2.7rem);
-  line-height: 1.02;
+  font-size: clamp(2rem, 3vw, 2.5rem);
+  line-height: 1.04;
   letter-spacing: -0.06em;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -389,6 +420,7 @@ select:focus {
   background:
     linear-gradient(180deg, rgba(29, 25, 23, 0.95), rgba(42, 37, 33, 0.92));
   color: var(--inverse);
+  box-shadow: 0 16px 32px rgba(26, 20, 15, 0.22);
 }
 
 .stat-card--primary span,
@@ -398,13 +430,13 @@ select:focus {
 
 .stat-card--input {
   background:
-    linear-gradient(180deg, rgba(224, 235, 232, 0.86), rgba(245, 248, 247, 0.72));
+    linear-gradient(180deg, rgba(228, 237, 233, 0.92), rgba(246, 248, 247, 0.76));
 }
 
 .stat-card--input input {
-  margin-top: 18px;
+  margin-top: 10px;
   border-color: rgba(44, 57, 53, 0.08);
-  background: rgba(255, 255, 255, 0.68);
+  background: rgba(255, 255, 255, 0.74);
   color: var(--text);
 }
 
@@ -414,13 +446,15 @@ select:focus {
 
 .stat-card--difference {
   background:
-    linear-gradient(180deg, rgba(255, 245, 239, 0.86), rgba(255, 252, 247, 0.74));
+    linear-gradient(180deg, rgba(255, 245, 239, 0.9), rgba(255, 252, 247, 0.76));
 }
 
 .empty-state {
-  padding: 24px 0 10px;
+  padding: 22px 20px;
   color: var(--muted);
-  border-top: 1px solid var(--line);
+  border: 1px dashed rgba(38, 31, 24, 0.12);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.44);
 }
 
 .card-list {
@@ -430,29 +464,34 @@ select:focus {
 
 .credit-card {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(200px, 1fr) minmax(220px, 0.9fr) auto;
-  gap: 14px;
-  align-items: center;
-  padding: 12px 0;
-  border-top: 1px solid rgba(38, 31, 24, 0.08);
+  grid-template-columns: minmax(0, 1.2fr) minmax(220px, 0.95fr) minmax(220px, 0.92fr) auto;
+  gap: 16px;
+  align-items: start;
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(38, 31, 24, 0.08);
+  box-shadow: var(--shadow-soft);
   transition:
     transform 180ms ease,
     opacity 180ms ease,
-    border-color 180ms ease;
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .credit-card:first-child {
-  border-top: 0;
+  border-top: 1px solid rgba(38, 31, 24, 0.08);
 }
 
 .credit-card:hover {
-  border-color: rgba(181, 82, 51, 0.22);
+  border-color: rgba(181, 82, 51, 0.2);
+  box-shadow: 0 18px 42px rgba(63, 39, 24, 0.12);
 }
 
 .credit-card__identity {
   min-width: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
 }
 
@@ -466,13 +505,13 @@ select:focus {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .credit-card__bank-name {
   display: inline-flex;
   align-items: center;
-  padding: 3px 9px;
+  padding: 4px 10px;
   border-radius: 999px;
   background: rgba(181, 82, 51, 0.1);
   color: var(--accent-deep);
@@ -487,14 +526,14 @@ select:focus {
 
 .credit-card__name {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.02rem;
   font-weight: 700;
-  line-height: 1.22;
+  line-height: 1.28;
   overflow-wrap: anywhere;
 }
 
 .credit-card__updated-at {
-  margin: 4px 0 0;
+  margin: 6px 0 0;
   color: var(--muted);
   font-size: 0.78rem;
 }
@@ -511,7 +550,7 @@ select:focus {
   flex: 0 0 auto;
   display: grid;
   place-items: center;
-  background: rgba(255, 255, 255, 0.74);
+  background: rgba(255, 255, 255, 0.84);
   border: 1px solid rgba(38, 31, 24, 0.08);
 }
 
@@ -538,6 +577,10 @@ select:focus {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.26);
 }
 
+.inline-field {
+  align-content: start;
+}
+
 .inline-field--available span {
   color: var(--muted);
   font-size: 0.8rem;
@@ -545,7 +588,7 @@ select:focus {
 
 .inline-field--available input {
   border-color: rgba(38, 31, 24, 0.08);
-  background: rgba(255, 255, 255, 0.62);
+  background: rgba(255, 255, 255, 0.82);
   color: var(--text);
   padding: 11px 14px;
 }
@@ -563,9 +606,9 @@ select:focus {
 .metric-block {
   display: grid;
   gap: 6px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.56);
+  padding: 12px 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.74);
   border: 1px solid rgba(38, 31, 24, 0.06);
 }
 
@@ -579,7 +622,7 @@ select:focus {
     "SF Pro Display",
     "Segoe UI",
     sans-serif;
-  font-size: 1.18rem;
+  font-size: 1.16rem;
   letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
 }
@@ -587,6 +630,7 @@ select:focus {
 .credit-card__actions {
   display: flex;
   justify-content: flex-end;
+  align-self: center;
   gap: 8px;
   flex-wrap: wrap;
 }
@@ -749,7 +793,7 @@ select:focus {
 
   .masthead h1 {
     max-width: none;
-    font-size: clamp(3rem, 12vw, 4.8rem);
+    font-size: clamp(3rem, 12vw, 4.6rem);
   }
 
   .action-strip {
@@ -766,6 +810,7 @@ select:focus {
 
 @media (max-width: 720px) {
   .app-shell {
+    width: min(100% - 20px, 1320px);
     padding-top: 18px;
   }
 
@@ -773,8 +818,16 @@ select:focus {
   .compose-panel,
   .overview,
   .ledger-detail {
-    padding: 22px 20px;
+    padding: 22px 18px;
     border-radius: 24px;
+  }
+
+  .meta-chip,
+  .meta-note,
+  .stat-card,
+  .credit-card,
+  .empty-state {
+    border-radius: 20px;
   }
 
   .stat-card {
@@ -787,5 +840,9 @@ select:focus {
 
   .credit-card__metrics {
     grid-template-columns: 1fr;
+  }
+
+  .credit-card__actions {
+    width: 100%;
   }
 }
