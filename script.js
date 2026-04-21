@@ -82,6 +82,57 @@ function formatCurrency(value) {
   }).format(Number.isFinite(value) ? value : 0);
 }
 
+function getAmountDensity(formattedValue) {
+  const amountText = String(formattedValue || '').replace(/\s/g, '');
+  const length = amountText.length;
+
+  if (length >= 16) {
+    return 'tiny';
+  }
+
+  if (length >= 13) {
+    return 'compact';
+  }
+
+  return 'default';
+}
+
+function setCurrencyValue(element, value) {
+  if (!element) {
+    return;
+  }
+
+  const formattedValue = formatCurrency(value);
+  const currencyMatch = formattedValue.match(/^(-?)¥(.*)$/);
+  const prefix = currencyMatch ? `${currencyMatch[1]}¥` : '';
+  const amount = currencyMatch ? currencyMatch[2] : formattedValue;
+  const amountSegments = amount.split(',');
+
+  element.textContent = '';
+  element.dataset.density = getAmountDensity(formattedValue);
+  element.setAttribute('aria-label', formattedValue);
+
+  if (prefix) {
+    const symbolElement = document.createElement('span');
+    symbolElement.className = 'amount-value__symbol';
+    symbolElement.textContent = prefix;
+    element.appendChild(symbolElement);
+  }
+
+  const textElement = document.createElement('span');
+  textElement.className = 'amount-value__text';
+
+  amountSegments.forEach((segment, index) => {
+    const chunkElement = document.createElement('span');
+    const isLastChunk = index === amountSegments.length - 1;
+    chunkElement.className = 'amount-value__chunk';
+    chunkElement.textContent = isLastChunk ? segment : `${segment},`;
+    textElement.appendChild(chunkElement);
+  });
+
+  element.appendChild(textElement);
+}
+
 function formatAmount(value) {
   return new Intl.NumberFormat('zh-CN', {
     minimumFractionDigits: 0,
@@ -158,8 +209,8 @@ function updateSummary() {
   const ledgerTotalDebt = getLedgerTotal();
   const difference = cardsTotalDebt - ledgerTotalDebt;
 
-  cardsTotalDebtElement.textContent = formatCurrency(cardsTotalDebt);
-  differenceElement.textContent = formatCurrency(difference);
+  setCurrencyValue(cardsTotalDebtElement, cardsTotalDebt);
+  setCurrencyValue(differenceElement, difference);
 
   if (Math.abs(difference) < 0.005) {
     differenceElement.style.color = 'var(--success)';
@@ -214,8 +265,8 @@ function renderCards() {
     nameElement.textContent = card.name || bankConfig.name;
     updatedAtElement.textContent = formatUpdatedAt(card.updatedAt);
     tailElement.textContent = `尾号 ${card.last4}`;
-    limitValueElement.textContent = formatCurrency(card.limit);
-    debtValueElement.textContent = formatCurrency(logicComputeDebt(card.limit, card.available));
+    setCurrencyValue(limitValueElement, card.limit);
+    setCurrencyValue(debtValueElement, logicComputeDebt(card.limit, card.available));
     availableInputElement.value = card.available ? formatAmount(card.available) : '';
 
     bindFormattedAmountInput(availableInputElement, {

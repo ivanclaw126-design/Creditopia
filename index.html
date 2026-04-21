@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Creditopia 信用卡额度追踪</title>
-    <link rel="stylesheet" href="./styles.css?v=5" />
+    <link rel="stylesheet" href="./styles.css?v=8" />
   </head>
   <body>
     <div class="ambient ambient--one" aria-hidden="true"></div>
@@ -21,10 +21,6 @@
         </div>
 
         <div class="masthead__meta">
-          <div class="meta-chip">
-            <span>工作台</span>
-            <strong>额度 / 欠款 / 差额</strong>
-          </div>
           <div class="meta-note">
             <span>存储方式</span>
             <strong id="storage-mode">仅保存在当前浏览器</strong>
@@ -127,10 +123,6 @@
             <button type="submit" class="primary-btn">添加信用卡</button>
           </form>
 
-          <p class="compose-footnote">新增后会立即进入下方追踪区，可继续修改剩余额度。</p>
-          <p class="compose-footnote compose-footnote--subtle">
-            建议以后通过本地小站访问，不再直接双击 `index.html`。
-          </p>
         </aside>
 
         <section class="main-panel">
@@ -146,7 +138,7 @@
             <div class="stat-grid">
               <article class="stat-card stat-card--primary">
                 <span>信用卡总欠款</span>
-                <strong id="cards-total-debt">¥0.00</strong>
+                <strong id="cards-total-debt" class="amount-value amount-value--hero">¥0.00</strong>
               </article>
 
               <article class="stat-card stat-card--input">
@@ -161,7 +153,7 @@
 
               <article class="stat-card stat-card--difference">
                 <span>差额</span>
-                <strong id="debt-difference">¥0.00</strong>
+                <strong id="debt-difference" class="amount-value amount-value--hero">¥0.00</strong>
                 <small id="difference-hint">信用卡汇总 - 记账软件记录</small>
               </article>
             </div>
@@ -213,11 +205,11 @@
         <div class="credit-card__metrics">
           <div class="metric-block">
             <span>总额度</span>
-            <strong class="limit-value"></strong>
+            <strong class="limit-value amount-value amount-value--metric"></strong>
           </div>
           <div class="metric-block">
             <span>当前欠款</span>
-            <strong class="debt-value"></strong>
+            <strong class="debt-value amount-value amount-value--metric"></strong>
           </div>
         </div>
 
