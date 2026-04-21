@@ -493,6 +493,16 @@ select:focus {
   overflow-wrap: anywhere;
 }
 
+.credit-card__updated-at {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.form-mode-hint--editing {
+  color: rgba(255, 214, 170, 0.86);
+}
+
 .bank-logo-wrap {
   width: 48px;
   height: 36px;
@@ -577,11 +587,23 @@ select:focus {
 .credit-card__actions {
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .credit-card__actions .ghost-btn {
   padding: 8px 12px;
   font-size: 0.84rem;
+}
+
+.edit-btn {
+  background: rgba(47, 129, 103, 0.12);
+  color: var(--success);
+}
+
+.delete-btn {
+  background: rgba(203, 76, 51, 0.1);
+  color: var(--danger);
 }
 
 .bank-logo--icbc {

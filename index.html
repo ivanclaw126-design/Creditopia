@@ -50,6 +50,7 @@
           </p>
 
           <form id="card-form" class="card-form">
+            <p id="form-mode-hint" class="compose-footnote compose-footnote--subtle"></p>
             <label>
               <span>银行</span>
               <select id="card-bank">
@@ -196,6 +197,7 @@
               <span class="credit-card__tail"></span>
             </div>
             <p class="credit-card__name"></p>
+            <p class="credit-card__updated-at"></p>
           </div>
         </div>
 
@@ -220,11 +222,13 @@
         </div>
 
         <div class="credit-card__actions">
+          <button type="button" class="ghost-btn edit-btn">编辑</button>
           <button type="button" class="ghost-btn delete-btn">删除</button>
         </div>
       </article>
     </template>
 
-    <script src="./script.js?v=5"></script>
+    <script src="./logic.js?v=6"></script>
+    <script src="./script.js?v=6"></script>
   </body>
 </html>
