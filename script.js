@@ -25,13 +25,28 @@ const differenceHintElement = document.querySelector('#difference-hint');
 const storageModeElement = document.querySelector('#storage-mode');
 const emptyState = document.querySelector('#empty-state');
 const cardList = document.querySelector('#card-list');
+const scrollProgressBar = document.querySelector('#scroll-progress-bar');
+const heroScoreValueElement = document.querySelector('#hero-score-value');
+const heroSignalValueElement = document.querySelector('#hero-signal-value');
+const heroDeltaValueElement = document.querySelector('#hero-delta-value');
+const heroPipelineValueElement = document.querySelector('#hero-pipeline-value');
+const insightCardCountElement = document.querySelector('#insight-card-count');
+const insightUtilizationElement = document.querySelector('#insight-utilization');
+const insightSyncStateElement = document.querySelector('#insight-sync-state');
+const insightLastUpdateElement = document.querySelector('#insight-last-update');
 const cardItemTemplate = document.querySelector('#card-item-template');
 const exportDataButton = document.querySelector('#export-data-btn');
 const importDataButton = document.querySelector('#import-data-btn');
 const importFileInput = document.querySelector('#import-file-input');
+const processSteps = Array.from(document.querySelectorAll('.process-step'));
 
 let cards = loadCards();
 let editingCardId = null;
+let summaryAnimationFrame = null;
+let previousSummaryState = {
+  cardsTotalDebt: 0,
+  difference: 0,
+};
 
 function createId() {
   if (window.crypto && typeof window.crypto.randomUUID === 'function') {
@@ -75,10 +90,12 @@ function getStorageModeLabel() {
   return `本地站点存储：${window.location.origin}`;
 }
 
-function formatCurrency(value) {
+function formatCurrency(value, { minimumFractionDigits = 2, maximumFractionDigits = 2 } = {}) {
   return new Intl.NumberFormat('zh-CN', {
     style: 'currency',
     currency: 'CNY',
+    minimumFractionDigits,
+    maximumFractionDigits,
   }).format(Number.isFinite(value) ? value : 0);
 }
 
@@ -97,12 +114,12 @@ function getAmountDensity(formattedValue) {
   return 'default';
 }
 
-function setCurrencyValue(element, value) {
+function setCurrencyValue(element, value, options = {}) {
   if (!element) {
     return;
   }
 
-  const formattedValue = formatCurrency(value);
+  const formattedValue = formatCurrency(value, options);
   const currencyMatch = formattedValue.match(/^(-?)¥(.*)$/);
   const prefix = currencyMatch ? `${currencyMatch[1]}¥` : '';
   const amount = currencyMatch ? currencyMatch[2] : formattedValue;
@@ -131,6 +148,30 @@ function setCurrencyValue(element, value) {
   });
 
   element.appendChild(textElement);
+}
+
+function animateCurrencyValue(element, fromValue, toValue, duration = 720) {
+  if (!element) {
+    return;
+  }
+
+  const startValue = Number.isFinite(fromValue) ? fromValue : 0;
+  const endValue = Number.isFinite(toValue) ? toValue : 0;
+  const startTime = performance.now();
+
+  function step(currentTime) {
+    const progress = Math.min((currentTime - startTime) / duration, 1);
+    const easedProgress = 1 - Math.pow(1 - progress, 3);
+    const nextValue = startValue + (endValue - startValue) * easedProgress;
+    setCurrencyValue(element, nextValue);
+
+    if (progress < 1) {
+      summaryAnimationFrame = window.requestAnimationFrame(step);
+    }
+  }
+
+  window.cancelAnimationFrame(summaryAnimationFrame);
+  summaryAnimationFrame = window.requestAnimationFrame(step);
 }
 
 function formatAmount(value) {
@@ -184,6 +225,103 @@ function showFormMessage(message, isEditing = false) {
   formModeHint.classList.toggle('form-mode-hint--editing', isEditing);
 }
 
+function updateHeroTelemetry(cardsTotalDebt, difference) {
+  const cardCount = cards.length;
+  const diffMagnitude = Math.abs(difference);
+  const coverageBonus = Math.min(cardCount * 4, 16);
+  const syncPenalty = Math.min(Math.round(diffMagnitude / 1500), 28);
+  const score = Math.max(52, Math.min(99, 84 + coverageBonus - syncPenalty));
+
+  if (heroScoreValueElement) {
+    heroScoreValueElement.textContent = String(score);
+  }
+
+  if (heroPipelineValueElement) {
+    heroPipelineValueElement.textContent = `${cardCount} ${cardCount === 1 ? 'node' : 'nodes'}`;
+  }
+
+  if (!heroSignalValueElement || !heroDeltaValueElement) {
+    return;
+  }
+
+  if (cardCount === 0) {
+    heroSignalValueElement.textContent = 'standby';
+    heroDeltaValueElement.textContent = 'waiting';
+    return;
+  }
+
+  if (diffMagnitude < 0.005) {
+    heroSignalValueElement.textContent = 'stable';
+    heroDeltaValueElement.textContent = 'synced';
+    return;
+  }
+
+  if (diffMagnitude < 5000) {
+    heroSignalValueElement.textContent = 'monitor';
+    heroDeltaValueElement.textContent = 'offset';
+    return;
+  }
+
+  heroSignalValueElement.textContent = 'warning';
+  heroDeltaValueElement.textContent = 'drifting';
+}
+
+function formatRelativeUpdate(value) {
+  if (!value) {
+    return 'no signal';
+  }
+
+  const updateDate = new Date(value);
+  if (Number.isNaN(updateDate.getTime())) {
+    return 'invalid';
+  }
+
+  return new Intl.DateTimeFormat('zh-CN', {
+    month: 'numeric',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(updateDate);
+}
+
+function updateInsightStrip(difference) {
+  const cardCount = cards.length;
+  const totalLimit = cards.reduce((sum, card) => sum + card.limit, 0);
+  const totalDebt = cards.reduce((sum, card) => sum + logicComputeDebt(card.limit, card.available), 0);
+  const averageUtilization = totalLimit > 0 ? Math.round((totalDebt / totalLimit) * 100) : 0;
+  const latestUpdatedAt = cards.reduce((latest, card) => {
+    if (!card.updatedAt) {
+      return latest;
+    }
+
+    return !latest || new Date(card.updatedAt) > new Date(latest) ? card.updatedAt : latest;
+  }, '');
+
+  if (insightCardCountElement) {
+    insightCardCountElement.textContent = String(cardCount);
+  }
+
+  if (insightUtilizationElement) {
+    insightUtilizationElement.textContent = `${averageUtilization}%`;
+  }
+
+  if (insightSyncStateElement) {
+    if (cardCount === 0) {
+      insightSyncStateElement.textContent = 'standby';
+    } else if (Math.abs(difference) < 0.005) {
+      insightSyncStateElement.textContent = 'synced';
+    } else if (Math.abs(difference) < 5000) {
+      insightSyncStateElement.textContent = 'monitor';
+    } else {
+      insightSyncStateElement.textContent = 'warning';
+    }
+  }
+
+  if (insightLastUpdateElement) {
+    insightLastUpdateElement.textContent = formatRelativeUpdate(latestUpdatedAt);
+  }
+}
+
 function resetForm() {
   editingCardId = null;
   form.reset();
@@ -209,7 +347,7 @@ function updateSummary() {
   const ledgerTotalDebt = getLedgerTotal();
   const difference = cardsTotalDebt - ledgerTotalDebt;
 
-  setCurrencyValue(cardsTotalDebtElement, cardsTotalDebt);
+  animateCurrencyValue(cardsTotalDebtElement, previousSummaryState.cardsTotalDebt, cardsTotalDebt);
   setCurrencyValue(differenceElement, difference);
 
   if (Math.abs(difference) < 0.005) {
@@ -219,9 +357,121 @@ function updateSummary() {
     differenceElement.style.color = 'var(--danger)';
     differenceHintElement.textContent = '信用卡侧更高：记账软件可能少记了这部分。';
   } else {
-    differenceElement.style.color = 'var(--brand)';
+    differenceElement.style.color = 'var(--accent)';
     differenceHintElement.textContent = '记账侧更高：检查是否有未同步到本页面的卡片或账单。';
   }
+
+  previousSummaryState = {
+    cardsTotalDebt,
+    difference,
+  };
+
+  updateHeroTelemetry(cardsTotalDebt, difference);
+  updateInsightStrip(difference);
+}
+
+function updateUtilizationRing(cardElement, limit, available) {
+  if (!cardElement) {
+    return;
+  }
+
+  const debt = logicComputeDebt(limit, available);
+  const utilization = limit > 0 ? Math.min(debt / limit, 1) : 0;
+  const percentElement = cardElement.querySelector('.utilization-percent');
+  const ringElement = cardElement.querySelector('.utilization-ring');
+
+  if (percentElement) {
+    percentElement.textContent = `${Math.round(utilization * 100)}%`;
+  }
+
+  if (ringElement) {
+    ringElement.style.setProperty('--progress', utilization.toFixed(4));
+  }
+}
+
+function updateScrollProgress() {
+  if (!scrollProgressBar) {
+    return;
+  }
+
+  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+  scrollProgressBar.style.width = `${Math.min(Math.max(progress, 0), 1) * 100}%`;
+}
+
+function bindCardTilt(cardElement) {
+  if (!cardElement || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return;
+  }
+
+  cardElement.addEventListener('pointermove', (event) => {
+    const rect = cardElement.getBoundingClientRect();
+    const offsetX = (event.clientX - rect.left) / rect.width - 0.5;
+    const offsetY = (event.clientY - rect.top) / rect.height - 0.5;
+    const rotateY = offsetX * 6;
+    const rotateX = offsetY * -4;
+    cardElement.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-2px)`;
+  });
+
+  cardElement.addEventListener('pointerleave', () => {
+    cardElement.style.transform = '';
+  });
+}
+
+function bindMagneticButtons() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return;
+  }
+
+  const magneticButtons = document.querySelectorAll('.primary-btn, .ghost-btn--light, .credit-card__actions .ghost-btn');
+
+  magneticButtons.forEach((button) => {
+    if (button.dataset.magneticBound === 'true') {
+      return;
+    }
+
+    button.dataset.magneticBound = 'true';
+    button.classList.add('magnetic-active');
+
+    button.addEventListener('pointermove', (event) => {
+      const rect = button.getBoundingClientRect();
+      const offsetX = (event.clientX - rect.left) / rect.width - 0.5;
+      const offsetY = (event.clientY - rect.top) / rect.height - 0.5;
+      button.style.transform = `translate(${offsetX * 10}px, ${offsetY * 8}px)`;
+    });
+
+    button.addEventListener('pointerleave', () => {
+      button.style.transform = '';
+    });
+  });
+}
+
+function bindProcessRail() {
+  if (!processSteps.length) {
+    return;
+  }
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    processSteps.forEach((step) => step.classList.add('is-active'));
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          window.setTimeout(() => {
+            entry.target.classList.add('is-active');
+          }, index * 120);
+        }
+      });
+    },
+    {
+      threshold: 0.35,
+    }
+  );
+
+  processSteps.forEach((step) => observer.observe(step));
 }
 
 function renderCards() {
@@ -265,9 +515,16 @@ function renderCards() {
     nameElement.textContent = card.name || bankConfig.name;
     updatedAtElement.textContent = formatUpdatedAt(card.updatedAt);
     tailElement.textContent = `尾号 ${card.last4}`;
-    setCurrencyValue(limitValueElement, card.limit);
-    setCurrencyValue(debtValueElement, logicComputeDebt(card.limit, card.available));
+    setCurrencyValue(limitValueElement, card.limit, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+    setCurrencyValue(debtValueElement, logicComputeDebt(card.limit, card.available), {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
     availableInputElement.value = card.available ? formatAmount(card.available) : '';
+    updateUtilizationRing(cardElement, card.limit, card.available);
 
     bindFormattedAmountInput(availableInputElement, {
       onCommit(nextAvailable) {
@@ -305,8 +562,11 @@ function renderCards() {
     });
 
     cardElement.dataset.id = card.id;
+    bindCardTilt(cardElement);
     cardList.appendChild(fragment);
   });
+
+  bindMagneticButtons();
 }
 
 function buildExportPayload() {
@@ -447,5 +707,10 @@ importFileInput.addEventListener('change', async (event) => {
   }
 });
 
+window.addEventListener('scroll', updateScrollProgress, { passive: true });
+window.addEventListener('resize', updateScrollProgress);
+
 renderCards();
 updateSummary();
+updateScrollProgress();
+bindProcessRail();

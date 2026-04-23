@@ -4,20 +4,48 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Creditopia 信用卡额度追踪</title>
-    <link rel="stylesheet" href="./styles.css?v=8" />
+    <link rel="stylesheet" href="./styles.css?v=11" />
   </head>
-  <body>
+  <body id="top">
+    <div class="scroll-progress" aria-hidden="true">
+      <div class="scroll-progress__bar" id="scroll-progress-bar"></div>
+    </div>
     <div class="ambient ambient--one" aria-hidden="true"></div>
     <div class="ambient ambient--two" aria-hidden="true"></div>
+    <div class="ambient ambient--three" aria-hidden="true"></div>
+    <div class="tech-grid" aria-hidden="true"></div>
 
     <div class="app-shell">
+      <nav class="topbar reveal" aria-label="页面导航">
+        <a class="topbar__brand" href="#top">Creditopia</a>
+        <div class="topbar__links">
+          <a href="#overview-panel">总览</a>
+          <a href="#process-panel">工作流</a>
+          <a href="#cards-panel">卡片</a>
+        </div>
+      </nav>
+
       <header class="masthead reveal">
         <div class="masthead__brand">
           <p class="brand-mark">Creditopia</p>
           <h1>信用卡额度追踪</h1>
           <p class="masthead__summary">
-            同步每张卡的剩余额度，直接核对总欠款与记账软件差值。
+            用更清晰的视图同步每张卡的剩余额度，并即时核对总欠款差额。
           </p>
+          <div class="masthead__highlights" aria-label="系统能力">
+            <div class="highlight-chip">
+              <span class="highlight-chip__label">追踪模式</span>
+              <strong>额度即时回算</strong>
+            </div>
+            <div class="highlight-chip">
+              <span class="highlight-chip__label">状态反馈</span>
+              <strong>差额同步校验</strong>
+            </div>
+            <div class="highlight-chip">
+              <span class="highlight-chip__label">数据节奏</span>
+              <strong>手动录入 立刻响应</strong>
+            </div>
+          </div>
         </div>
 
         <div class="masthead__meta">
@@ -34,6 +62,39 @@
             </button>
           </div>
           <input type="file" id="import-file-input" accept="application/json" hidden />
+
+          <div class="hero-visual" aria-hidden="true">
+            <div class="hero-visual__core">
+              <div class="hero-visual__ring hero-visual__ring--outer"></div>
+              <div class="hero-visual__ring hero-visual__ring--mid"></div>
+              <div class="hero-visual__ring hero-visual__ring--inner"></div>
+              <div class="hero-visual__beam"></div>
+              <div class="hero-visual__pulse"></div>
+              <div class="hero-visual__score">
+                <span>credit scan</span>
+                <strong id="hero-score-value">96</strong>
+              </div>
+              <div class="hero-visual__orbits">
+                <span class="hero-visual__dot hero-visual__dot--one"></span>
+                <span class="hero-visual__dot hero-visual__dot--two"></span>
+                <span class="hero-visual__dot hero-visual__dot--three"></span>
+              </div>
+            </div>
+            <div class="hero-visual__readouts">
+              <div class="hero-readout">
+                <span>signal</span>
+                <strong id="hero-signal-value">stable</strong>
+              </div>
+              <div class="hero-readout">
+                <span>delta</span>
+                <strong id="hero-delta-value">synced</strong>
+              </div>
+              <div class="hero-readout">
+                <span>tracked cards</span>
+                <strong id="hero-pipeline-value">0 nodes</strong>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -42,7 +103,7 @@
           <div class="section-label">录入区</div>
           <h2>新增信用卡</h2>
           <p class="section-copy">
-            先写基础信息，再填当前剩余额度，系统会自动更新欠款。
+            先填基础信息，再录入当前剩余额度，系统会自动更新欠款。
           </p>
 
           <form id="card-form" class="card-form">
@@ -126,13 +187,13 @@
         </aside>
 
         <section class="main-panel">
-          <section class="overview reveal">
+          <section class="overview reveal" id="overview-panel">
             <div class="overview__head">
               <div>
                 <div class="section-label">总览</div>
                 <h2>对账状态</h2>
               </div>
-              <p class="overview__hint">信用卡汇总会和你的记账软件记录保持同屏核对。</p>
+              <p class="overview__hint">同屏核对总欠款差额</p>
             </div>
 
             <div class="stat-grid">
@@ -157,17 +218,84 @@
                 <small id="difference-hint">信用卡汇总 - 记账软件记录</small>
               </article>
             </div>
+
+            <div class="insight-strip" aria-label="实时情报">
+              <article class="insight-chip">
+                <span>tracked cards</span>
+                <strong id="insight-card-count">0</strong>
+              </article>
+              <article class="insight-chip">
+                <span>avg utilization</span>
+                <strong id="insight-utilization">0%</strong>
+              </article>
+              <article class="insight-chip">
+                <span>sync state</span>
+                <strong id="insight-sync-state">standby</strong>
+              </article>
+              <article class="insight-chip">
+                <span>latest update</span>
+                <strong id="insight-last-update">no signal</strong>
+              </article>
+            </div>
           </section>
 
-          <section class="ledger-detail reveal">
+          <section class="process-panel reveal" id="process-panel">
+            <div class="process-panel__head">
+              <div>
+                <div class="section-label">工作流</div>
+                <h2>从额度录入到差额闭环</h2>
+              </div>
+              <p class="process-panel__hint">持续汇总、回算并标记异常</p>
+            </div>
+
+            <div class="process-rail">
+              <article class="process-step">
+                <span class="process-step__index">01</span>
+                <h3>录入额度基线</h3>
+                <p>输入银行、尾号、总额度和当前剩余额度，建立实时快照。</p>
+              </article>
+
+              <article class="process-step">
+                <span class="process-step__index">02</span>
+                <h3>自动回算欠款</h3>
+                <p>系统会根据可用额度反推出欠款，并同步到总览状态区。</p>
+              </article>
+
+              <article class="process-step">
+                <span class="process-step__index">03</span>
+                <h3>对账软件核验</h3>
+                <p>输入记账软件总欠款，Creditopia 会标记是否对平及偏差方向。</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="ledger-detail reveal" id="cards-panel">
             <div class="section-label">逐卡追踪</div>
             <div class="ledger-detail__head">
               <h2>信用卡列表</h2>
-              <p>优先修改每张卡的当前剩余额度，欠款会自动回算。</p>
+              <p>修改剩余额度，欠款自动回算</p>
             </div>
 
             <div id="empty-state" class="empty-state">
-              还没有信用卡记录，先在左侧录入一张开始追踪吧。
+              <div class="empty-state__header">
+                <span class="empty-state__eyebrow">system ready</span>
+                <h3>等待接入第一张信用卡</h3>
+                <p>录入一张卡后，右侧列表会切换成实时追踪视图，并同步更新总览与对账状态。</p>
+              </div>
+              <div class="empty-state__grid" aria-hidden="true">
+                <div class="empty-state__tile">
+                  <span>node setup</span>
+                  <strong>bank + tail + limit</strong>
+                </div>
+                <div class="empty-state__tile">
+                  <span>reconciliation</span>
+                  <strong>difference sync</strong>
+                </div>
+                <div class="empty-state__tile">
+                  <span>storage mode</span>
+                  <strong>browser local</strong>
+                </div>
+              </div>
             </div>
 
             <div id="card-list" class="card-list"></div>
@@ -178,6 +306,7 @@
 
     <template id="card-item-template">
       <article class="credit-card reveal">
+        <div class="credit-card__scanline" aria-hidden="true"></div>
         <div class="credit-card__identity">
           <div class="bank-logo-wrap" aria-hidden="true">
             <img class="bank-logo-image" alt="" />
@@ -213,6 +342,19 @@
           </div>
         </div>
 
+        <div class="credit-card__utilization">
+          <div class="utilization-ring">
+            <svg viewBox="0 0 120 120" class="utilization-ring__svg" aria-hidden="true">
+              <circle class="utilization-ring__track" cx="60" cy="60" r="46"></circle>
+              <circle class="utilization-ring__progress" cx="60" cy="60" r="46"></circle>
+            </svg>
+            <div class="utilization-ring__content">
+              <span>占用</span>
+              <strong class="utilization-percent">0%</strong>
+            </div>
+          </div>
+        </div>
+
         <div class="credit-card__actions">
           <button type="button" class="ghost-btn edit-btn">编辑</button>
           <button type="button" class="ghost-btn delete-btn">删除</button>
@@ -221,6 +363,6 @@
     </template>
 
     <script src="./logic.js?v=6"></script>
-    <script src="./script.js?v=6"></script>
+    <script src="./script.js?v=7"></script>
   </body>
 </html>
